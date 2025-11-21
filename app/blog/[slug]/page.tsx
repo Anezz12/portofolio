@@ -6,9 +6,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, ArrowLeft, Send } from "lucide-react";
+import { Calendar, ArrowLeft, Send, LogOut } from "lucide-react";
 import Link from "next/link";
-import { useSession, signIn } from "@/lib/auth-client";
+import { useSession, signIn, signOut } from "@/lib/auth-client";
 
 interface Blog {
   id: string;
@@ -136,6 +136,15 @@ export default function BlogDetailPage() {
                       <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-muted-foreground">
+                          Logged in as {session.user.name}
+                        </span>
+                        <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                          <LogOut className="h-4 w-4 mr-1" />
+                          Logout
+                        </Button>
+                      </div>
                       <Textarea
                         placeholder="Write a comment..."
                         value={newComment}

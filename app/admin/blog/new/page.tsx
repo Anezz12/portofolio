@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Save } from "lucide-react";
-
-const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), {
-  ssr: false,
-});
 
 export default function NewBlogPage() {
   const router = useRouter();
@@ -67,11 +62,8 @@ export default function NewBlogPage() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <FloatingShapes />
-      <div className="absolute inset-0 grid-background opacity-30" />
-
-      <div className="relative container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto">
           <Link href="/admin/blog" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />

@@ -2,17 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Eye } from "lucide-react";
-import { useSession } from "@/lib/auth-client";
-
-const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), {
-  ssr: false,
-});
+import { Plus, Edit, Trash2, Eye, LogOut, Globe, EyeOff } from "lucide-react";
+import { useSession, signOut } from "@/lib/auth-client";
 
 interface Blog {
   id: string;
@@ -29,7 +24,10 @@ export default function AdminBlogPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isPending && (!session || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL)) {
+    if (
+      !isPending &&
+      (!session || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL)
+    ) {
       router.push("/");
       return;
     }
@@ -47,7 +45,7 @@ export default function AdminBlogPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this blog?")) return;
-    
+
     try {
       await fetch(`/api/admin/blog/${id}`, { method: "DELETE" });
       setBlogs(blogs.filter((b) => b.id !== id));
@@ -56,12 +54,30 @@ export default function AdminBlogPage() {
     }
   };
 
+  const handleTogglePublish = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/blog/${id}/toggle-publish`, {
+        method: "PATCH",
+      });
+      if (res.ok) {
+        setBlogs(blogs.map((b) =>
+          b.id === id ? { ...b, published: !currentStatus } : b
+        ));
+      }
+    } catch (error) {
+      console.error("Failed to toggle publish status");
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/");
+  };
+
   if (isPending || loading) {
     return (
-      <div className="relative min-h-screen">
-        <FloatingShapes />
-        <div className="absolute inset-0 grid-background opacity-30" />
-        <div className="relative container mx-auto px-4 py-16 text-center">
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-16 text-center">
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -69,22 +85,25 @@ export default function AdminBlogPage() {
   }
 
   return (
-    <div className="relative min-h-screen">
-      <FloatingShapes />
-      <div className="absolute inset-0 grid-background opacity-30" />
-
-      <div className="relative container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold">
               <span className="gradient-text">Manage Blogs</span>
             </h1>
-            <Button asChild>
-              <Link href="/admin/blog/new">
-                <Plus className="h-4 w-4 mr-2" />
-                New Blog
-              </Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild>
+                <Link href="/admin/blog/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Blog
+                </Link>
+              </Button>
+              <Button variant="outline" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -102,17 +121,31 @@ export default function AdminBlogPage() {
                       <Badge variant={blog.published ? "default" : "secondary"}>
                         {blog.published ? "Published" : "Draft"}
                       </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleTogglePublish(blog.id, blog.published)}
+                        title={blog.published ? "Unpublish" : "Publish"}>
+                        {blog.published ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Globe className="h-4 w-4" />
+                        )}
+                      </Button>
                       <Button variant="ghost" size="icon" asChild>
                         <Link href={`/blog/${blog.slug}`}>
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/admin/blog/${blog.id}/edit`}>
+                        <Link href={`/admin/blog/edit/${blog.id}`}>
                           <Edit className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(blog.id)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(blog.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
