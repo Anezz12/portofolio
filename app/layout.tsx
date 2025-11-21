@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Site configuration - update with your info
+// Site configuration
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yoursite.com";
 const siteName = "Harsena Argretya";
 const siteDescription =
