@@ -1,9 +1,43 @@
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import type { Metadata } from "next";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const siteName = "Harsena Argretya";
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description:
+    "Thoughts, tutorials, and insights on web development, programming, and technology.",
+  openGraph: {
+    title: "Blog",
+    description:
+      "Thoughts, tutorials, and insights on web development, programming, and technology.",
+    type: "website",
+    url: `${siteUrl}/blog`,
+    siteName: siteName,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog",
+    description:
+      "Thoughts, tutorials, and insights on web development, programming, and technology.",
+  },
+  alternates: {
+    canonical: `${siteUrl}/blog`,
+  },
+};
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -32,7 +66,9 @@ export default async function Blog() {
           {!posts || posts.length === 0 ? (
             <Card className="border-border/50">
               <CardContent className="flex items-center justify-center py-16">
-                <p className="text-muted-foreground">No blog posts yet. Check back soon!</p>
+                <p className="text-muted-foreground">
+                  No blog posts yet. Check back soon!
+                </p>
               </CardContent>
             </Card>
           ) : (
@@ -40,14 +76,12 @@ export default async function Blog() {
               {posts.map((post) => (
                 <Card
                   key={post.id}
-                  className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-foreground/30 shine-effect"
-                >
+                  className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-foreground/30 shine-effect">
                   <CardHeader>
                     <CardTitle className="text-2xl">
                       <Link
                         href={`/blog/${post.slug}`}
-                        className="hover:text-foreground transition-colors"
-                      >
+                        className="hover:text-foreground transition-colors">
                         {post.title}
                       </Link>
                     </CardTitle>
@@ -69,11 +103,14 @@ export default async function Blog() {
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
                         <span>
-                          {new Date(post.created_at).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          {new Date(post.created_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
@@ -81,7 +118,10 @@ export default async function Blog() {
                         <span>{post.read_time}</span>
                       </div>
                     </div>
-                    <Button variant="ghost" className="group-hover:text-foreground" asChild>
+                    <Button
+                      variant="ghost"
+                      className="group-hover:text-foreground"
+                      asChild>
                       <Link href={`/blog/${post.slug}`}>Read More →</Link>
                     </Button>
                   </CardFooter>

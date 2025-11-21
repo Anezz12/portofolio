@@ -15,17 +15,17 @@ const footerLinks = {
     {
       href: "https://github.com/yourusername",
       label: "GitHub",
-      icon: FaGithub
+      icon: FaGithub,
     },
     {
       href: "https://linkedin.com/in/yourusername",
       label: "LinkedIn",
-      icon: FaLinkedin
+      icon: FaLinkedin,
     },
     {
       href: "https://twitter.com/yourusername",
       label: "Twitter",
-      icon: FaXTwitter
+      icon: FaXTwitter,
     },
   ],
 };
@@ -40,14 +40,19 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand Section */}
             <div className="col-span-1 md:col-span-2">
-              <Link href="/" className="flex items-center gap-2 group mb-4 w-fit">
+              <Link
+                href="/"
+                className="flex items-center gap-2 group mb-4 w-fit">
                 <div className="p-2 rounded-lg bg-foreground group-hover:shadow-lg group-hover:shadow-foreground/20 transition-all duration-300">
                   <Sparkles className="h-5 w-5 text-background" />
                 </div>
-                <span className="text-xl font-bold gradient-text">Portfolio</span>
+                <span className="text-xl font-bold gradient-text">
+                  Portfolio
+                </span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-sm">
-                Building exceptional digital experiences with modern technologies and elegant design.
+                Building exceptional digital experiences with modern
+                technologies and elegant design.
               </p>
             </div>
 
@@ -59,8 +64,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                       {link.label}
                     </Link>
                   </li>
@@ -80,8 +84,7 @@ export function Footer() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                       <Icon className="h-4 w-4" />
                       {social.label}
                     </a>
@@ -96,13 +99,17 @@ export function Footer() {
           {/* Bottom Section */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} Your Name. All rights reserved.
+              © {currentYear} Harsena Argretya. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground transition-colors">
+              <Link
+                href="/privacy"
+                className="hover:text-foreground transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">
+              <Link
+                href="/terms"
+                className="hover:text-foreground transition-colors">
                 Terms of Service
               </Link>
             </div>

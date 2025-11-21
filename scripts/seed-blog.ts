@@ -311,10 +311,10 @@ const { data, error } = await supabase
 ];
 
 async function seedBlog() {
-  console.log("🌱 Starting blog seed...");
+  console.log("Starting blog seed...");
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("❌ Supabase credentials not found in .env.local");
+    console.error("Supabase credentials not found in .env.local");
     process.exit(1);
   }
 
@@ -326,20 +326,20 @@ async function seedBlog() {
       .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all
 
     if (deleteError) {
-      console.warn("⚠️  Could not clear existing posts:", deleteError.message);
+      console.warn("Could not clear existing posts:", deleteError.message);
     } else {
-      console.log("🗑️  Cleared existing posts");
+      console.log("Cleared existing posts");
     }
 
     // Insert new posts
     const { data, error } = await supabase.from("blog_posts").insert(blogPosts);
 
     if (error) {
-      console.error("❌ Error seeding blog posts:", error);
+      console.error("Error seeding blog posts:", error);
       process.exit(1);
     }
 
-    console.log(`✅ Successfully seeded ${blogPosts.length} blog posts!`);
+    console.log(`Successfully seeded ${blogPosts.length} blog posts!`);
     console.log("\nSeeded posts:");
     blogPosts.forEach((post, index) => {
       console.log(
@@ -347,7 +347,7 @@ async function seedBlog() {
       );
     });
   } catch (error) {
-    console.error("❌ Unexpected error:", error);
+    console.error("Unexpected error:", error);
     process.exit(1);
   }
 }
