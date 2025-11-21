@@ -1,46 +1,78 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, Calendar } from "lucide-react";
 
 const experiences = [
   {
     id: 1,
-    company: "Company Name 1",
-    position: "Senior Full Stack Developer",
-    period: "Jan 2022 - Present",
-    description: "Leading development of enterprise web applications using modern technologies. Mentoring junior developers and conducting code reviews.",
+    company: "Aksa Digital Group",
+    position: "Web Developer",
+    period: "Sep 2025 - Present",
+    description:
+      "Building scalable web applications using Laravel and Vue.js with focus on clean architecture and best practices.",
     achievements: [
-      "Architected and implemented a microservices-based system that improved performance by 40%",
-      "Led a team of 5 developers in delivering major features on schedule",
-      "Introduced CI/CD pipelines reducing deployment time by 60%",
+      "Developed full-stack web applications using Laravel and Vue.js",
+      "Designed and integrated RESTful APIs for frontend-backend communication",
+      "Implemented manual and automated testing workflows for application stability",
+      "Used Postman for API testing and documentation",
+      "Managed version control with Git and GitLab including CI/CD integration",
     ],
-    technologies: ["Next.js", "Node.js", "PostgreSQL", "AWS", "Docker"],
+    technologies: ["Laravel", "Vue.js", "REST API", "Git", "GitLab", "Postman"],
   },
   {
     id: 2,
-    company: "Company Name 2",
-    position: "Full Stack Developer",
-    period: "Jun 2020 - Dec 2021",
-    description: "Developed and maintained multiple client-facing web applications with focus on performance and user experience.",
+    company: "Forum Asisten - Amikom Yogyakarta",
+    position: "Practice Assistant",
+    period: "Mar 2025 - Aug 2025",
+    description:
+      "Teaching assistant for Web Programming and Data Structure courses.",
     achievements: [
-      "Built responsive web applications serving 100K+ daily active users",
-      "Optimized database queries reducing load time by 50%",
-      "Collaborated with design team to implement pixel-perfect UI components",
+      "Web Programming Assistant: Teaching HTML5, CSS, JavaScript, and PHP",
+      "Data Structure Assistant: Teaching C and C++ programming concepts",
+      "Developed public speaking and mentoring skills",
     ],
-    technologies: ["React", "TypeScript", "Express", "MongoDB", "Redis"],
+    technologies: ["HTML5", "CSS", "JavaScript", "PHP", "C", "C++"],
   },
   {
     id: 3,
-    company: "Company Name 3",
-    position: "Junior Developer",
-    period: "Jan 2019 - May 2020",
-    description: "Started career developing internal tools and contributing to various projects.",
+    company: "Dicoding Indonesia",
+    position: "Frontend and Backend Cohort",
+    period: "Sep 2024 - Dec 2024",
+    description:
+      "Internship program focused on full-stack web development through Kampus Merdeka MSIB Batch 7.",
     achievements: [
-      "Developed internal dashboard used by 50+ employees",
-      "Fixed critical bugs and improved code quality",
-      "Participated in agile development practices and daily standups",
+      "Developed web apps including portfolio, Notes App, Bookshelf App, and E-Commerce Catalog",
+      "Mastered PWA, clean code practices, and web performance optimization",
+      "Implemented responsive layouts using Flexbox, CSS Grid, and media queries",
+      "Contributed to Capstone project (GoMealSaver) using Next.js 14 - selected as one of the best capstones",
     ],
-    technologies: ["JavaScript", "React", "Node.js", "MySQL"],
+    technologies: [
+      "Next.js",
+      "Node.js",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "REST API",
+    ],
+  },
+  {
+    id: 4,
+    company: "Kampus Merdeka",
+    position: "Tribe MSIB Batch VII",
+    period: "Oct 2024 - Jan 2025",
+    description:
+      "Student representative for Studi Independen program from PT Presentologics (Dicoding).",
+    achievements: [
+      "Served as liaison between MSIB program and students (mentees) at partner company",
+      "Facilitated communication and coordination between stakeholders",
+    ],
+    technologies: ["Leadership", "Communication", "Coordination"],
   },
 ];
 
