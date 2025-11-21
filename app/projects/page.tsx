@@ -1,7 +1,14 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Github } from "lucide-react";
+
+const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), {
+  ssr: false,
+});
 
 const projects = [
   {
@@ -41,8 +48,9 @@ const projects = [
 export default function Projects() {
   return (
     <div className="relative">
-      {/* Grid Background */}
-      <div className="absolute inset-0 grid-background opacity-50" />
+      {/* 3D Background */}
+      <FloatingShapes />
+      <div className="absolute inset-0 grid-background opacity-30" />
 
       <div className="relative container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">

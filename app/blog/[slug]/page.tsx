@@ -1,187 +1,199 @@
-import Link from "next/link";
+"use client";
+
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
-import { notFound } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import type { Metadata } from "next";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Calendar, ArrowLeft, Send } from "lucide-react";
+import Link from "next/link";
+import { useSession, signIn } from "@/lib/auth-client";
 
-// Site configuration - update with your domain
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-const siteName = "Harsena Argretya";
+interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+}
 
-export const revalidate = 60;
-
-// Generate dynamic metadata for SEO
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-
-  const { data: post } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .single();
-
-  if (!post) {
-    return {
-      title: "Post Not Found",
-    };
-  }
-
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(post.title)}`;
-
-  return {
-    title: post.title,
-    description: post.description,
-    authors: [{ name: siteName }],
-    keywords: post.tags,
-    openGraph: {
-      title: post.title,
-      description: post.description,
-      type: "article",
-      publishedTime: post.created_at,
-      modifiedTime: post.updated_at,
-      authors: [siteName],
-      tags: post.tags,
-      url: `${siteUrl}/blog/${post.slug}`,
-      siteName: siteName,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.description,
-      images: [ogImage],
-    },
-    alternates: {
-      canonical: `${siteUrl}/blog/${post.slug}`,
-    },
+interface Comment {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: {
+    name: string;
+    image: string | null;
   };
 }
 
-export default async function BlogPost({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+export default function BlogDetailPage() {
+  const params = useParams();
+  const { data: session } = useSession();
+  const [blog, setBlog] = useState<Blog | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const { data: post, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .single();
+  useEffect(() => {
+    if (params.slug) {
+      fetch(`/api/blog/${params.slug}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setBlog(data.blog);
+          setComments(data.comments || []);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [params.slug]);
 
-  if (error || !post) {
-    notFound();
-  }
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    author: {
-      "@type": "Person",
-      name: siteName,
-      url: siteUrl,
-    },
-    datePublished: post.created_at,
-    dateModified: post.updated_at,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${siteUrl}/blog/${post.slug}`,
-    },
-    keywords: post.tags?.join(", "),
-    publisher: {
-      "@type": "Person",
-      name: siteName,
-    },
+  const handleSubmitComment = async () => {
+    if (!newComment.trim() || !blog) return;
+    
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/blog/${params.slug}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newComment }),
+      });
+      
+      if (res.ok) {
+        const comment = await res.json();
+        setComments([...comments, comment]);
+        setNewComment("");
+      }
+    } catch (error) {
+      console.error("Failed to post comment");
+    }
+    setSubmitting(false);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <div className="min-h-screen">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-muted-foreground">Blog not found</p>
+          <Button asChild className="mt-4">
+            <Link href="/blog">Back to Blog</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/blog" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Blog
+          </Link>
 
-      <div className="relative">
-        <div className="absolute inset-0 grid-background opacity-50" />
+          <article>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+              <Calendar className="h-4 w-4" />
+              <span>{new Date(blog.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-8">
+              <span className="gradient-text">{blog.title}</span>
+            </h1>
 
-        <div className="relative container mx-auto px-4 py-16">
-          <div className="max-w-3xl mx-auto">
-            <Button variant="ghost" asChild className="mb-8">
-              <Link href="/blog">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Blog
-              </Link>
-            </Button>
+            <div className="prose prose-invert max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+            </div>
+          </article>
 
-            <article>
-              <header className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                  <span className="gradient-text">{post.title}</span>
-                </h1>
-                <div className="flex items-center gap-4 text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>
-                      {new Date(post.created_at).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
+          {/* Comments Section */}
+          <div className="mt-16 pt-8 border-t border-border/50">
+            <h2 className="text-2xl font-bold mb-8">Comments ({comments.length})</h2>
+
+            {/* Comment Form */}
+            {session ? (
+              <Card className="mb-8 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="flex gap-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={session.user.image || ""} />
+                      <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <Textarea
+                        placeholder="Write a comment..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        className="mb-4"
+                      />
+                      <Button onClick={handleSubmitComment} disabled={submitting || !newComment.trim()}>
+                        <Send className="h-4 w-4 mr-2" />
+                        {submitting ? "Posting..." : "Post Comment"}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{post.read_time}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {post.tags?.map((tag: string) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </header>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="mb-8 border-border/50">
+                <CardContent className="py-8 text-center">
+                  <p className="text-muted-foreground mb-4">Sign in to leave a comment</p>
+                  <Button onClick={() => signIn.social({ provider: "google" })}>
+                    Sign in with Google
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
-              <div
-                className="prose prose-neutral dark:prose-invert max-w-none
-                [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:mt-8 [&>h1]:mb-4
-                [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:mt-6 [&>h2]:mb-3
-                [&>h3]:text-xl [&>h3]:font-bold [&>h3]:mt-4 [&>h3]:mb-2
-                [&>p]:mb-4 [&>p]:leading-7
-                [&>ul]:list-disc [&>ul]:list-outside [&>ul]:ml-6 [&>ul]:mb-4 [&>ul]:space-y-2
-                [&>ol]:list-decimal [&>ol]:list-outside [&>ol]:ml-6 [&>ol]:mb-4 [&>ol]:space-y-2
-                [&>li]:leading-7
-                [&>pre]:bg-muted [&>pre]:p-4 [&>pre]:rounded-lg [&>pre]:overflow-x-auto [&>pre]:mb-4
-                [&>code]:bg-muted [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-sm [&>code]:font-mono
-                [&>blockquote]:border-l-4 [&>blockquote]:border-border [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:my-4
-                [&>a]:text-foreground [&>a]:underline hover:[&>a]:text-foreground/80
-                [&>strong]:font-bold"
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
-            </article>
+            {/* Comments List */}
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <Card key={comment.id} className="border-border/50">
+                  <CardHeader>
+                    <div className="flex items-start gap-4">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={comment.user.image || ""} />
+                        <AvatarFallback>{comment.user.name?.[0] || "U"}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold">{comment.user.name}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {new Date(comment.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground">{comment.content}</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+
+              {comments.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">
+                  No comments yet. Be the first to comment!
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

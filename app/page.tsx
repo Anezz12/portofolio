@@ -1,23 +1,20 @@
+"use client";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Mail,
-  ArrowRight,
-  Code2,
-  Palette,
-  Database,
-  Zap,
-  ExternalLink,
-} from "lucide-react";
+import { Mail, ArrowRight, Briefcase, Calendar } from "lucide-react";
+
+const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), {
+  ssr: false,
+});
 import {
   FaGithub,
   FaLinkedin,
@@ -48,51 +45,39 @@ const skills = [
   { name: "Vue.js", icon: FaVuejs, color: "text-green-400" },
 ];
 
-const features = [
+const experiences = [
   {
-    icon: Code2,
-    title: "Clean Code",
-    description:
-      "Writing maintainable and scalable code following best practices",
+    company: "Aksa Digital Group",
+    position: "Web Developer",
+    period: "Sep 2025 - Present",
+    type: "Internship",
   },
   {
-    icon: Palette,
-    title: "Modern Design",
-    description: "Creating beautiful and intuitive user interfaces",
+    company: "Forum Asisten - Amikom",
+    position: "Practice Assistant",
+    period: "Mar 2025 - Aug 2025",
+    type: "Contract",
   },
   {
-    icon: Database,
-    title: "Full Stack",
-    description: "End-to-end development from frontend to backend",
-  },
-  {
-    icon: Zap,
-    title: "Performance",
-    description: "Optimized applications for the best user experience",
+    company: "Dicoding Indonesia",
+    position: "Frontend & Backend Cohort",
+    period: "Sep 2024 - Dec 2024",
+    type: "Internship",
   },
 ];
 
-const featuredProjects = [
-  {
-    title: "E-Commerce Platform",
-    description:
-      "Full-stack platform with real-time inventory and payment integration",
-    tech: ["Next.js", "TypeScript", "PostgreSQL"],
-    link: "/projects",
-  },
-  {
-    title: "AI Dashboard",
-    description: "Analytics dashboard with machine learning insights",
-    tech: ["React", "Python", "TensorFlow"],
-    link: "/projects",
-  },
+const stats = [
+  { label: "Projects Completed", value: "10+" },
+  { label: "Technologies", value: "15+" },
+  { label: "Months Experience", value: "12+" },
 ];
 
 export default function Home() {
   return (
     <div className="relative">
-      {/* Grid Background */}
-      <div className="absolute inset-0 grid-background opacity-50" />
+      {/* 3D Background */}
+      <FloatingShapes />
+      <div className="absolute inset-0 grid-background opacity-30" />
 
       {/* Hero Section */}
       <section className="relative container mx-auto px-4 py-20 md:py-32">
@@ -260,95 +245,77 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Stats Section */}
       <section className="relative container mx-auto px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="gradient-text">What I Do</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Building digital solutions with passion
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <Card
-                  key={feature.title}
-                  className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-foreground/30 shine-effect">
-                  <CardHeader>
-                    <div className="p-3 rounded-lg bg-foreground/10 w-fit mb-4 group-hover:bg-foreground/20 transition-all">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              );
-            })}
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-6">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="text-center p-6 rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm">
+                <p className="text-4xl md:text-5xl font-bold gradient-text mb-2">
+                  {stat.value}
+                </p>
+                <p className="text-muted-foreground text-sm md:text-base">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Projects Section */}
+      {/* Experience Section */}
       <section className="relative container mx-auto px-4 py-16 pb-32">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="gradient-text">Featured Projects</span>
+              <span className="gradient-text">Experience</span>
             </h2>
             <p className="text-muted-foreground text-lg">
-              Some of my recent work
+              My professional journey
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {featuredProjects.map((project) => (
+          <div className="space-y-4">
+            {experiences.map((exp) => (
               <Card
-                key={project.title}
+                key={exp.company}
                 className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-foreground/30 shine-effect">
-                <CardHeader>
-                  <CardTitle className="text-2xl group-hover:text-foreground transition-colors">
-                    {project.title}
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    {project.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {project.tech.map((tech) => (
-                      <Badge key={tech} variant="secondary">
-                        {tech}
+                <CardHeader className="pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-foreground/10 group-hover:bg-foreground/20 transition-all">
+                        <Briefcase className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">
+                          {exp.position}
+                        </CardTitle>
+                        <CardDescription>{exp.company}</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      <span>{exp.period}</span>
+                      <Badge variant="secondary" className="ml-2">
+                        {exp.type}
                       </Badge>
-                    ))}
+                    </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="group-hover:text-foreground"
-                    asChild>
-                    <Link href={project.link}>
-                      View Project <ExternalLink className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
+                </CardHeader>
               </Card>
             ))}
           </div>
 
-          <div className="text-center">
+          <div className="text-center mt-8">
             <Button
               size="lg"
               variant="outline"
               className="shine-effect"
               asChild>
-              <Link href="/projects">
-                View All Projects
+              <Link href="/experience">
+                View Full Experience
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

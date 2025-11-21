@@ -1,132 +1,121 @@
+"use client";
+
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import type { Metadata } from "next";
+import { Calendar, ArrowRight, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-const siteName = "Harsena Argretya";
+interface Blog {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  createdAt: string;
+  tags?: string[];
+  readTime?: string;
+}
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description:
-    "Thoughts, tutorials, and insights on web development, programming, and technology.",
-  openGraph: {
-    title: "Blog",
-    description:
-      "Thoughts, tutorials, and insights on web development, programming, and technology.",
-    type: "website",
-    url: `${siteUrl}/blog`,
-    siteName: siteName,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog",
-    description:
-      "Thoughts, tutorials, and insights on web development, programming, and technology.",
-  },
-  alternates: {
-    canonical: `${siteUrl}/blog`,
-  },
-};
+export default function BlogPage() {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export const revalidate = 60; // Revalidate every 60 seconds
-
-export default async function Blog() {
-  const { data: posts } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("published", true)
-    .order("created_at", { ascending: false });
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((res) => res.json())
+      .then((data) => {
+        setBlogs(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   return (
-    <div className="relative">
-      <div className="absolute inset-0 grid-background opacity-50" />
-
-      <div className="relative container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-12 text-center">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="mb-16 text-center">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               <span className="gradient-text">Blog</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Thoughts, tutorials, and insights on web development
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Thoughts, tutorials, and insights about web development
             </p>
           </div>
 
-          {!posts || posts.length === 0 ? (
-            <Card className="border-border/50">
-              <CardContent className="flex items-center justify-center py-16">
-                <p className="text-muted-foreground">
-                  No blog posts yet. Check back soon!
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              {posts.map((post) => (
-                <Card
-                  key={post.id}
-                  className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-foreground/30 shine-effect">
-                  <CardHeader>
-                    <CardTitle className="text-2xl">
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="hover:text-foreground transition-colors">
-                        {post.title}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription className="text-base mt-2">
-                      {post.description}
-                    </CardDescription>
+          {/* Blog Grid */}
+          {loading ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="border-border/50 animate-pulse">
+                  <CardHeader className="space-y-3">
+                    <div className="h-4 bg-muted rounded w-1/3"></div>
+                    <div className="h-6 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-full"></div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags?.map((tag: string) => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {new Date(post.created_at).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{post.read_time}</span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      className="group-hover:text-foreground"
-                      asChild>
-                      <Link href={`/blog/${post.slug}`}>Read More →</Link>
-                    </Button>
-                  </CardFooter>
                 </Card>
               ))}
+            </div>
+          ) : blogs.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              {blogs.map((blog) => (
+                <Link key={blog.id} href={`/blog/${blog.slug}`} className="group">
+                  <Card className="h-full border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                        {blog.readTime && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-4 w-4" />
+                            <span>{blog.readTime}</span>
+                          </div>
+                        )}
+                      </div>
+                      <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                        {blog.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <CardDescription className="text-base line-clamp-2 mb-4">
+                        {blog.description}
+                      </CardDescription>
+
+                      {blog.tags && blog.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {blog.tags.slice(0, 3).map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex items-center text-sm text-primary font-medium group-hover:gap-2 transition-all">
+                        <span>Read more</span>
+                        <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                <Calendar className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">No blog posts yet</h3>
+              <p className="text-muted-foreground">Check back soon for new content!</p>
             </div>
           )}
         </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
@@ -7,6 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, Calendar } from "lucide-react";
+
+const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), {
+  ssr: false,
+});
 
 const experiences = [
   {
@@ -79,8 +86,9 @@ const experiences = [
 export default function Experience() {
   return (
     <div className="relative">
-      {/* Grid Background */}
-      <div className="absolute inset-0 grid-background opacity-50" />
+      {/* 3D Background */}
+      <FloatingShapes />
+      <div className="absolute inset-0 grid-background opacity-30" />
 
       <div className="relative container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
