@@ -248,12 +248,12 @@ export default function Home() {
       {/* Stats Section */}
       <section className="relative container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="text-center p-6 rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm">
-                <p className="text-4xl md:text-5xl font-bold gradient-text mb-2">
+                className="text-center p-4 sm:p-6 rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text mb-2">
                   {stat.value}
                 </p>
                 <p className="text-muted-foreground text-sm md:text-base">

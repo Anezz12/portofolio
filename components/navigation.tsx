@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Sparkles, Sun, Moon, Monitor, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
 
 const navItems = [
@@ -91,23 +91,26 @@ export function Navigation() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <div className="flex flex-col gap-4 mt-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        "px-4 py-3 text-base font-medium rounded-lg transition-all duration-300",
-                        pathname === item.href
-                          ? "bg-foreground text-background"
-                          : "text-foreground hover:bg-secondary"
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+              <SheetContent side="top" className="h-auto pt-12">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <div className="container mx-auto px-4">
+                  <div className="flex flex-col gap-1 pb-4">
+                    {navItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300",
+                          pathname === item.href
+                            ? "bg-foreground text-background"
+                            : "text-foreground hover:bg-secondary"
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
